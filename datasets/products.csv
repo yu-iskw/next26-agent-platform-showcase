@@ -1,0 +1,7 @@
+product_id,product_name,category,inventory_on_hand,reorder_point,preferred_supplier,unit_cost_usd
+sku-1001,Trail Backpack Pro,Backpacks,42,80,SummitWorks,95.0
+sku-1002,Alpine Shell Jacket,Outerwear,180,150,NorthPeak,210.0
+sku-1003,Ultralight Day Pack,Backpacks,25,60,SummitWorks,70.0
+sku-1004,Expedition Water Bottle,Accessories,500,220,HydraCo,18.0
+sku-1005,Merino Base Layer,Apparel,90,120,NorthPeak,48.0
+sku-1006,Carbon Trekking Poles,Accessories,65,90,VertexTrail,88.0

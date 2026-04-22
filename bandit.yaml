@@ -1,0 +1,7 @@
+exclude_dirs:
+  - .venv
+  - .trunk
+  - datasets
+skips:
+  - B112
+  - B608

@@ -1,0 +1,18 @@
+{
+  "status": "error",
+  "message": "Vertex preview evaluation API unavailable: tqdm is not installed. Please install the SDK using \"pip install google-cloud-aiplatform[evaluation]\"",
+  "input_path": "eval/judge_calibration.csv",
+  "output_path": "eval/results/judge_calibration_latest.json",
+  "rows_total": 30,
+  "rows_scored": 0,
+  "human_label_column": "human_label",
+  "predicted_label_column": null,
+  "agreement_rate": null,
+  "preview_api_available": false,
+  "details": {
+    "autorater_config": {
+      "flip_enabled": true,
+      "sampling_count": 4
+    }
+  }
+}

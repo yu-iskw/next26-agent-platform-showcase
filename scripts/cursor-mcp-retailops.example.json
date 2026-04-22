@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "retailops-tool-api": {
+      "command": "uv",
+      "args": ["run", "python", "-m", "app.tools.mcp_stdio_retailops"],
+      "cwd": "REPLACE_WITH_ABSOLUTE_REPO_PATH",
+      "env": {
+        "CLOUDRUN_TOOL_API_BASE_URL": "https://YOUR-CLOUD-RUN-URL"
+      }
+    }
+  }
+}

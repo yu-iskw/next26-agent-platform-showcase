@@ -1,0 +1,8 @@
+{
+  "typeCheckingMode": "standard",
+  "include": ["app", "cloudrun/tool_api"],
+  "exclude": [".venv", ".trunk", "datasets"],
+  "strict": ["app/tools/config.py", "app/agents/retailops_agent.py"],
+  "reportCallIssue": "none",
+  "reportMissingTypeStubs": false
+}

@@ -1,0 +1,52 @@
+name: Python CI
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      DEPLOYED_AGENT_RESOURCE_NAME: ${{ secrets.DEPLOYED_AGENT_RESOURCE_NAME }}
+      GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
+      GOOGLE_CLOUD_LOCATION: ${{ secrets.GOOGLE_CLOUD_LOCATION }}
+      STAGING_BUCKET: ${{ secrets.STAGING_BUCKET }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Install dependencies
+        run: uv sync --dev
+      - name: Install Trunk
+        run: |
+          curl -fsSL https://get.trunk.io | bash -s -- -y
+          echo "$HOME/.trunk/bin" >> "$GITHUB_PATH"
+      - name: Quality gate
+        run: make quality-gate
+      - name: Compile
+        run: make compile
+      - name: Unit tests
+        run: make test
+      - name: Prepare eval output directory
+        run: mkdir -p eval/results
+      - name: Run agent evaluation
+        if: ${{ env.DEPLOYED_AGENT_RESOURCE_NAME != '' }}
+        run: make eval-agent | tee eval/results/eval-agent.log
+      - name: Record eval skip reason
+        if: ${{ env.DEPLOYED_AGENT_RESOURCE_NAME == '' }}
+        run: echo "DEPLOYED_AGENT_RESOURCE_NAME secret is not set; skipped make eval-agent." > eval/results/skipped.txt
+      - name: Upload eval artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results
+          path: eval/results/
+          if-no-files-found: warn

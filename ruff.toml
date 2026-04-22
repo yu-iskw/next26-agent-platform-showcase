@@ -1,0 +1,41 @@
+target-version = "py312"
+line-length = 120
+respect-gitignore = true
+
+[lint]
+# Strict-by-default, practical for API and agent runtime code.
+select = [
+  "E",
+  "F",
+  "W",
+  "B",
+  "I",
+  "UP",
+  "SIM",
+  "ARG",
+  "N",
+  "PTH",
+  "C90",
+  "PLR",
+  "RUF",
+  "S",
+]
+ignore = [
+  "E501", # Let formatter handle line lengths.
+  "B008", # FastAPI dependency defaults often use call expressions.
+]
+
+[lint.pylint]
+max-args = 6
+max-locals = 10
+max-nested-blocks = 2
+max-returns = 3
+max-statements = 60
+max-positional-args = 6
+
+
+[lint.mccabe]
+max-complexity = 10
+
+[lint.per-file-ignores]
+"**/__init__.py" = ["F401"]

@@ -1,0 +1,14 @@
+# Example only. Agent Gateway is currently private preview in public docs.
+apiVersion: networking.agentplatform.cloud.google.com/v1alpha1
+kind: AgentGateway
+metadata:
+  name: retailops-gateway
+spec:
+  description: Central gateway for RetailOps Copilot
+  routes:
+    - match:
+        agent: retailops-copilot
+      backend:
+        runtime: agent-runtime
+  observability:
+    exportTelemetry: true

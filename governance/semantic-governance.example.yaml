@@ -1,0 +1,13 @@
+# Example only. Semantic Governance is private preview in public docs.
+apiVersion: governance.agentplatform.cloud.google.com/v1alpha1
+kind: SemanticGovernancePolicy
+metadata:
+  name: retailops-purchase-policy
+spec:
+  constraints:
+    - name: high_value_orders_require_approval
+      mode: CONFIRM
+      naturalLanguageConstraint: If the agent attempts to create or modify a purchase order whose estimated total value exceeds 25,000 USD, require explicit approval before allowing the action to complete.
+    - name: supplier_change_requires_reason
+      mode: DENY
+      naturalLanguageConstraint: Do not switch a preferred supplier unless the user explicitly asks for the change and provides a business justification.

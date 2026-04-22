@@ -1,0 +1,12 @@
+{
+  "thresholds": {
+    "SAFETY": 0.95,
+    "HALLUCINATION": 0.9,
+    "TOOL_USE_QUALITY": 0.85,
+    "deterministic_pass_rate": 0.9,
+    "failure_rate_max": 0.02,
+    "latency_p95_seconds_max": 15.0,
+    "trajectory_precision": 0.6,
+    "trajectory_recall": 0.6
+  }
+}

@@ -1,0 +1,14 @@
+# Example only. Attach through Agent Gateway or supported MCP / runtime surfaces.
+apiVersion: security.agentplatform.cloud.google.com/v1alpha1
+kind: ModelArmorPolicy
+metadata:
+  name: retailops-model-armor
+spec:
+  promptInjection:
+    mode: BLOCK
+  dataLeakPrevention:
+    mode: ALERT_AND_REDACT
+    piiTypes:
+      - EMAIL_ADDRESS
+      - PHONE_NUMBER
+      - CREDIT_CARD_NUMBER

@@ -1,0 +1,15 @@
+{
+  "type": "workspace_readwrite",
+  "networkPolicy": {
+    "default": "deny",
+    "allow": [
+      "pypi.org",
+      "files.pythonhosted.org",
+      "registry.terraform.io",
+      "github.com",
+      "api.github.com",
+      "*.googleapis.com",
+      "gcr.io"
+    ]
+  }
+}
