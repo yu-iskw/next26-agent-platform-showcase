@@ -61,17 +61,7 @@ describe-remote-mcp-config:
 
 demo-a2a:
 	@echo "Running local A2A federation demo..."
-	uv run python -c "
-from app.a2a.provider import A2AProvider
-from app.a2a.models import A2ATaskRequest
-provider = A2AProvider(use_mocks=True)
-req = A2ATaskRequest(intent='finance.order.review', payload={'order_id': 'po-demo', 'total_cost_usd': 30000.0})
-resp = provider.route(req)
-print('Finance decision:', resp.result.get('decision'))
-req2 = A2ATaskRequest(intent='supplier.quote.request', payload={'product_id': 'prod-001', 'quantity': 200})
-resp2 = provider.route(req2)
-print('Supplier quote: \$$%.2f/unit (discount=%s%%)' % (resp2.result.get('unit_price_usd', 0), resp2.result.get('discount_pct', 0)))
-"
+	uv run python scripts/demo_a2a.py
 
 generate-agent-card:
 	@echo "Generating agent card JSON..."
@@ -82,28 +72,7 @@ generate-agent-card:
 
 demo-workflow:
 	@echo "Running local workflow demo..."
-	uv run python -c "
-import tempfile, os
-os.environ['WORKFLOW_STATE_DIR'] = '.local/state'
-from app.workflows.order_replenishment import ReplenishmentWorkflowEngine
-from app.workflows.state_models import ApprovalDecision, ApprovalStatus
-engine = ReplenishmentWorkflowEngine()
-state = engine.create_workflow('prod-001', product_name='Trail Backpack Pro', risk_tolerance='medium')
-state = engine.compute_recommendation(state.workflow_id, current_stock=42, reorder_point=80, estimated_unit_cost_usd=95.0)
-state = engine.propose_order(state.workflow_id)
-state = engine.advance(state.workflow_id)
-print('Workflow ID:', state.workflow_id)
-print('Status:', state.status.value)
-print('Approval required:', state.approval_required)
-print('Proposed total: \$%.2f' % state.proposed_total_cost_usd)
-if state.approval_required:
-    print('  → Approving...')
-    decision = ApprovalDecision(workflow_id=state.workflow_id, approver='demo-user', decision=ApprovalStatus.APPROVED, notes='Demo approval')
-    engine.apply_approval(state.workflow_id, decision)
-    state = engine.finalize(state.workflow_id)
-    print('Final status:', state.status.value)
-    print('Order ID:', state.order_id)
-"
+	uv run python scripts/demo_workflow.py
 
 # ---- Evaluation (Workstream D) ------------------------------
 
