@@ -1,0 +1,88 @@
+{
+  "agent_id": "retailops-copilot-v1",
+  "agent_name": "RetailOps Copilot",
+  "description": "Multi-agent retail operations assistant. Handles inventory queries, sales trend analysis, purchase order creation, and durable replenishment workflows with human-in-the-loop approval.",
+  "version": "1.0.0",
+  "provider": "retailops-demo-org",
+  "endpoint_url": "https://your-tool-api-url",
+  "capabilities": [
+    {
+      "name": "inventory_query",
+      "description": "Query product inventory levels by name or ID.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "product_name": {"type": "string"}
+        }
+      },
+      "output_schema": {"type": "object"}
+    },
+    {
+      "name": "sales_trend_analysis",
+      "description": "Summarize monthly sales trends by product category.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "category": {"type": "string"}
+        }
+      },
+      "output_schema": {"type": "object"}
+    },
+    {
+      "name": "reorder_recommendation",
+      "description": "Compute a data-backed reorder recommendation for a product.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "product_name": {"type": "string"},
+          "multiplier": {"type": "number"}
+        }
+      },
+      "output_schema": {"type": "object"}
+    },
+    {
+      "name": "replenishment_workflow",
+      "description": "Initiate a durable replenishment workflow with optional human-in-the-loop approval. Returns a workflow_id for async tracking.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "product_id": {"type": "string"},
+          "current_stock": {"type": "integer"},
+          "reorder_point": {"type": "integer"},
+          "risk_tolerance": {"type": "string", "enum": ["low", "medium", "high"]}
+        },
+        "required": ["product_id"]
+      },
+      "output_schema": {"type": "object"}
+    },
+    {
+      "name": "purchase_order_status",
+      "description": "Retrieve the status of an existing purchase order or workflow.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "order_id": {"type": "string"}
+        },
+        "required": ["order_id"]
+      },
+      "output_schema": {"type": "object"}
+    }
+  ],
+  "supported_intents": [
+    "inventory.query",
+    "analytics.sales_trend",
+    "analytics.reorder_recommendation",
+    "order.create",
+    "order.status",
+    "workflow.replenishment.create",
+    "workflow.replenishment.approve",
+    "workflow.replenishment.reject",
+    "workflow.pending.list"
+  ],
+  "auth_type": "bearer",
+  "metadata": {
+    "status": "runnable-now",
+    "a2a_registration": "preview-scaffold",
+    "docs": "https://github.com/yu-iskw/next26-agent-platform-showcase/blob/main/docs/a2a-architecture.md"
+  }
+}

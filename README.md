@@ -1,57 +1,169 @@
 # Next '26 Agent Platform Showcase
 
-A complete example project for trying **Gemini Enterprise Agent Platform** with a realistic multi-agent retail operations workflow.
+A complete reference implementation for **Gemini Enterprise Agent Platform** with a realistic multi-agent retail operations workflow, now expanded with durable human-in-the-loop workflows, A2A federation, remote MCP, and release-grade evaluation.
 
-This repo is designed to exercise as many **Google Cloud Next '26** announcements as are currently practical from public docs and currently exposed SDKs, while staying explicit about what is **fully runnable**, what is **preview**, and what still requires **console or allowlist** setup.
+This repo exercises **Google Cloud Next '26** capabilities while being explicit about what is
+**runnable-now**, what is a **preview-scaffold**, and what is an **optional-integration**.
 
 ## What this project demonstrates
 
-### Fully implemented in code
+### runnable-now
 
-- **Agent Development Kit (ADK)** app with a **multi-agent** architecture
-- **Agent Runtime** deployment script
-- **Agent Identity** deployment mode
-- **Sessions + Memory Bank-ready** runtime configuration
-- **BigQuery** product and sales analytics tools
-- **Cloud Storage** grounding corpus / artifact bucket usage
-- **Cloud Run** microservice tools for order creation and approvals
-- **Local stdio MCP** server ([`app/tools/mcp_stdio_retailops.py`](app/tools/mcp_stdio_retailops.py)) for Cursor against the same REST tool API
-- **OpenTelemetry / telemetry-friendly** runtime env vars
-- **Evaluation** harness using the Vertex AI / Agent Platform eval APIs
-- **Terraform** for core project resources
-- **Synthetic seed data** and local/dev bootstrap scripts
+- **ADK multi-agent** architecture (intake → root → knowledge / analytics / order / workflow)
+- **Durable replenishment workflows** with pause/resume, approval gates, escalation, and audit replay
+- **A2A federation** — local mock Finance + Supplier agents with a clean routing layer
+- **Remote MCP server** — same tools over HTTP, deployable to Cloud Run
+- **Agent card** generation (`docs/examples/retailops-agent-card.json`)
+- **Local governance simulation** — prompt injection + exfiltration + unsafe-tool detection
+- **Release scorecard** — workflow, A2A, and policy eval suites with golden cases
+- **Correlation IDs** propagated across all service boundaries
+- BigQuery analytics, Cloud Storage grounding, Cloud Run REST tool API
+- stdio MCP server for Cursor, Agent Runtime deployment, Terraform infra
 
-### Implemented as configuration scaffolding because they are preview / private preview / console-first
+### preview-scaffold
 
-- **Agent Gateway**
-- **Semantic Governance**
-- **Model Armor via Agent Gateway**
-- **Simulated sessions in console**
-- **Cloud Run remote MCP**
-- **Knowledge Catalog / Smart Storage / Data Agent Kit** integration hooks
+- **Gemini Enterprise A2A registration** (`ENABLE_A2A_EXPERIMENTAL=true`)
+- **Firestore workflow state store** (`WORKFLOW_STATE_BACKEND=firestore`)
+- **Agent Gateway** policy enforcement (`governance/agent-gateway.example.yaml`)
+- **Semantic Governance** (`governance/semantic-governance.example.yaml`)
+
+### optional-integration
+
+- **Google Workspace connectors** — Drive, Gmail, Calendar (`ENABLE_WORKSPACE_CONNECTORS=true`)
+- **Model Armor** (`governance/model-armor.example.yaml`)
+- **Firestore** order persistence (tool API)
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    U[User / Client] --> R[Root Orchestrator Agent]
-    R --> I[Intake Agent]
-    R --> K[Knowledge Agent]
-    R --> A[Analytics Agent]
-    R --> O[Order Agent]
+    U[User / Client] --> RP[retailops_pipeline]
+    RP --> I[intake_agent]
+    RP --> R[retailops_root]
+
+    R --> K[knowledge_agent]
+    R --> A[analytics_agent]
+    R --> O[order_agent]
+    R --> W[workflow_agent]
 
     K --> BQ[(BigQuery)]
-    K --> GCS[(Cloud Storage docs)]
+    K --> GCS[(Cloud Storage)]
     A --> BQ
+
     O --> CR[Cloud Run Tool API]
-    CR --> FS[(Firestore optional)]
+    W --> WF[Workflow Engine]
+    WF --> LS[(Local JSON State)]
+    WF --> FS[(Firestore optional)]
+
+    CR --> FS
     R --> MB[Memory Bank / Sessions]
-    R --> OBS[Cloud Logging / Trace / Monitoring]
-    R --> EV[Agent Evaluation]
+    R --> OBS[Cloud Logging / Trace]
+    R --> EV[Eval Scorecard]
+
+    R -. A2A mock .-> FIN[Finance Agent]
+    R -. A2A mock .-> SUP[Supplier Agent]
     R -. preview .-> GW[Agent Gateway]
     GW -. preview .-> MA[Model Armor]
-    GW -. preview .-> SGP[Semantic Governance]
+
+    MCP[Remote MCP Server] -->|shares logic| WF
+    MCP -->|shares logic| CR
 ```
+
+## Feature Matrix
+
+| Feature | Status | Local | Cloud | Notes |
+|---|---|---|---|---|
+| ADK multi-agent orchestration | runnable-now | ✅ | ✅ | 5 agents |
+| Durable replenishment workflows | runnable-now | ✅ | ✅ | pause/resume/escalate |
+| Approval threshold policy | runnable-now | ✅ | ✅ | risk-tolerance adjustable |
+| Workflow audit log + replay | runnable-now | ✅ | ✅ | append-only JSONL |
+| Cloud Run workflow endpoints | runnable-now | ✅ | ✅ | 6 new REST endpoints |
+| A2A mock federation | runnable-now | ✅ | ✅ | Finance + Supplier agents |
+| Agent card generation | runnable-now | ✅ | ✅ | `make generate-agent-card` |
+| Remote MCP server | runnable-now | ✅ | ✅ | HTTP, Cloud Run-deployable |
+| stdio MCP server (Cursor) | runnable-now | ✅ | — | `make mcp-retailops` |
+| Local governance simulation | runnable-now | ✅ | — | NOT for production |
+| Release scorecard | runnable-now | ✅ | ✅ | JSON artifact per run |
+| Correlation IDs | runnable-now | ✅ | ✅ | X-Request-ID + traceparent |
+| BigQuery analytics | runnable-now | — | ✅ | products + sales tables |
+| Cloud Storage grounding | runnable-now | — | ✅ | `gs://` bucket |
+| Agent Runtime deployment | runnable-now | — | ✅ | Vertex AI |
+| Memory Bank | runnable-now | — | ✅/⚠️ | runtime config |
+| Workspace connectors | optional-integration | ✅ mock | ✅ real | `ENABLE_WORKSPACE_CONNECTORS` |
+| Firestore state store | optional-integration | — | ✅ | `WORKFLOW_STATE_BACKEND=firestore` |
+| Gemini Enterprise A2A | preview-scaffold | mock | ⚠️ | `ENABLE_A2A_EXPERIMENTAL=true` |
+| Agent Gateway | preview-scaffold | — | ⚠️ | example config only |
+| Semantic Governance | preview-scaffold | — | ⚠️ | example config only |
+| Model Armor | optional-integration | — | ⚠️ | GA in some regions |
+
+## Quick Paths
+
+### Local workflow demo
+
+```bash
+make install            # uv sync
+cp .env.example .env    # no changes needed for local
+make demo-workflow      # creates a workflow, shows pause/approve/complete
+```
+
+### Local A2A demo
+
+```bash
+make demo-a2a           # routes to Finance + Supplier mock agents
+make generate-agent-card  # writes docs/examples/retailops-agent-card.json
+```
+
+### Local remote MCP demo
+
+```bash
+make run-remote-mcp-local       # starts server on :8090
+make test-remote-mcp            # curl health + tool list
+# In another terminal:
+curl -X POST http://localhost:8090/mcp/tools/call \
+  -H "Content-Type: application/json" \
+  -d '{"name": "list_pending_approvals", "arguments": {}}'
+```
+
+### Local eval smoke suite
+
+```bash
+make eval-all           # workflow + A2A + policy evals → eval/results/
+```
+
+### Cloud deployment path
+
+```bash
+# 1. Provision infrastructure
+cd infra/terraform && terraform apply -var="project_id=YOUR_PROJECT" && cd ../..
+# 2. Seed data
+make seed-data
+# 3. Deploy REST tool API
+make deploy-tool-api
+# 4. Deploy remote MCP (optional)
+make deploy-remote-mcp
+# 5. Deploy agent runtime
+make deploy-agent
+# 6. Run full evaluation
+make eval-agent
+```
+
+## Reality Check
+
+| Category | Status |
+|---|---|
+| Multi-agent ADK app with workflows | **runnable-now** |
+| Human-in-the-loop approval workflow | **runnable-now** |
+| A2A federation (local mocks) | **runnable-now** |
+| Remote MCP server (local + Cloud Run) | **runnable-now** |
+| Local eval suite + scorecard | **runnable-now** |
+| Workspace connectors (mock) | **runnable-now** |
+| Local governance simulation | **runnable-now** (NOT for production) |
+| Gemini Enterprise A2A registration | **preview-scaffold** |
+| Agent Gateway enforcement | **preview-scaffold** |
+| Semantic Governance enforcement | **preview-scaffold** |
+| Workspace connectors (real API) | **optional-integration** |
+| Firestore workflow persistence | **optional-integration** |
+| Model Armor integration | **optional-integration** |
 
 ## Example use case
 
@@ -80,46 +192,82 @@ This gives you an opinionated but practical testbed for:
 .
 ├── app/
 │   ├── agents/
-│   │   └── retailops_agent.py
-│   ├── deploy/
-│   │   ├── deploy_agent_runtime.py
-│   │   ├── evaluate_agent.py
-│   │   ├── run_local.py
-│   │   └── seed_bigquery.py
-│   └── tools/
-│       ├── analytics_tools.py
-│       ├── commerce_tools.py
-│       ├── mcp_stdio_retailops.py
-│       ├── config.py
-│       ├── memory_helpers.py
-│       └── storage_tools.py
-├── cloudrun/tool_api/
-│   ├── Dockerfile
-│   ├── main.py
-│   └── requirements.txt
+│   │   └── retailops_agent.py           # Multi-agent ADK app (5 agents)
+│   ├── a2a/                             # A2A federation (runnable-now + preview-scaffold)
+│   │   ├── models.py
+│   │   ├── agent_card.py
+│   │   ├── provider.py
+│   │   ├── mock_external_agents.py
+│   │   └── clients/
+│   │       ├── finance_agent_client.py
+│   │       └── supplier_agent_client.py
+│   ├── connectors/                      # Workspace connectors (optional-integration)
+│   │   ├── base.py
+│   │   ├── drive_connector.py
+│   │   ├── gmail_connector.py
+│   │   └── calendar_connector.py
+│   ├── deploy/                          # Deployment entrypoints
+│   ├── evals/                           # Local eval suites (runnable-now)
+│   │   ├── workflow_eval.py
+│   │   ├── a2a_eval.py
+│   │   └── policy_eval.py
+│   ├── governance/                      # Local policy simulation (dev/test only)
+│   │   └── local_guardrails.py
+│   ├── observability/                   # Tracing + scorecard
+│   │   ├── correlation.py
+│   │   ├── trace_helpers.py
+│   │   └── release_scorecard.py
+│   ├── tools/
+│   │   ├── analytics_tools.py
+│   │   ├── commerce_tools.py
+│   │   ├── mcp_stdio_retailops.py       # stdio MCP for Cursor
+│   │   ├── mcp_remote_adapters.py       # Shared logic for all transports
+│   │   ├── workflow_tools.py            # Agent-callable workflow tools
+│   │   ├── config.py
+│   │   ├── memory_helpers.py
+│   │   └── storage_tools.py
+│   └── workflows/                       # Durable workflow engine (runnable-now)
+│       ├── state_models.py
+│       ├── state_store.py
+│       ├── audit_log.py
+│       ├── approval_handlers.py
+│       ├── resume_handlers.py
+│       └── order_replenishment.py
+├── cloudrun/
+│   ├── tool_api/                        # REST tool API (purchase orders + workflows)
+│   │   ├── Dockerfile
+│   │   ├── main.py
+│   │   └── requirements.txt
+│   └── remote_mcp/                      # Remote MCP server (runnable-now)
+│       ├── Dockerfile
+│       ├── main.py
+│       └── requirements.txt
 ├── datasets/
-│   ├── products.csv
-│   └── sales.csv
 ├── docs/
-│   ├── feature-mapping.md
-│   └── rollout-notes.md
+│   ├── a2a-architecture.md
+│   ├── evaluation-runbook.md
+│   ├── governance-enforcement.md
+│   ├── observability-runbook.md
+│   ├── remote-mcp-runbook.md
+│   ├── roadmap-next26.md
+│   ├── workflow-state-model.md
+│   ├── workspace-connectors.md
+│   └── examples/
+│       └── retailops-agent-card.json
 ├── eval/
-│   └── eval_prompts.csv
-├── governance/
-│   ├── agent-gateway.example.yaml
-│   ├── model-armor.example.yaml
-│   └── semantic-governance.example.yaml
+│   ├── golden/                          # Golden eval datasets
+│   │   ├── workflow_cases.csv
+│   │   ├── a2a_cases.csv
+│   │   └── policy_cases.csv
+│   └── results/                         # Scorecard artifacts (git-ignored)
+├── governance/                          # Preview config examples
 ├── infra/terraform/
-│   ├── main.tf
-│   ├── outputs.tf
-│   └── variables.tf
 ├── scripts/
-│   ├── bootstrap.sh
-│   ├── cursor-mcp-retailops.example.json
-│   ├── deploy_cloudrun_tool_api.sh
-│   ├── get_deployed_mcp_config.sh
-│   ├── grant_cloudrun_tool_api_invoker.sh
-│   └── run_mcp_stdio_retailops.sh
+├── tests/
+│   ├── a2a/
+│   ├── governance/
+│   ├── workflows/
+│   └── ... (existing test modules)
 ├── .env.example
 ├── Makefile
 └── pyproject.toml
@@ -495,11 +643,113 @@ Delete deployed reasoning engines and Cloud Run services if you created them out
 
 ---
 
-## 10. Reality check
+## 10. Troubleshooting
+
+### Auth failures
+
+**`403 Forbidden` on Cloud Run tool API**
+
+Grant `roles/run.invoker` to your identity:
+```bash
+MEMBER='user:you@example.com' bash scripts/grant_cloudrun_tool_api_invoker.sh
+```
+
+**`ModuleNotFoundError: No module named 'app'` in MCP server**
+
+Run from repo root with `uv run`:
+```bash
+cd /path/to/next26-agent-platform-showcase
+make mcp-retailops
+```
+
+### Workflow persistence issues
+
+**Workflow not found after restart**
+
+State is persisted in `WORKFLOW_STATE_DIR` (default: `.local/state/`). Check:
+```bash
+ls .local/state/
+cat .local/state/<workflow_id>.json | python -m json.tool
+```
+
+**Corrupted state file**
+
+The engine returns `None` for corrupted files. Check the audit log instead:
+```bash
+cat .local/state/audit/<workflow_id>.jsonl
+```
+
+### Missing preview access
+
+**`ENABLE_A2A_EXPERIMENTAL=true` but A2A registration fails**
+
+A2A registration requires preview program access. Until then, use `A2A_USE_MOCKS=true`
+(the default). See `docs/a2a-architecture.md`.
+
+**Agent Gateway configuration has no effect**
+
+Agent Gateway is a preview feature. The config examples in `governance/` are
+scaffolding only. Contact your Google Cloud representative.
+
+### MCP transport confusion
+
+**When should I use stdio vs remote MCP?**
+
+- **stdio** (`mcp_stdio_retailops.py`): Cursor/Claude Desktop on your laptop, single user
+- **remote MCP** (`cloudrun/remote_mcp/main.py`): team-shared server, remote clients, Cloud Run deployment
+
+Both use the same business logic via `mcp_remote_adapters.py`.
+
+See `docs/remote-mcp-runbook.md` for the full comparison.
+
+### Eval failures
+
+**`Workflow golden CSV not found`**
+
+Run from the repo root:
+```bash
+cd /path/to/next26-agent-platform-showcase
+make eval-workflow
+```
+
+**`all policy cases skip`**
+
+The governance module must be importable. Verify:
+```bash
+uv run python -c "from app.governance.local_guardrails import is_content_blocked; print('ok')"
+```
+
+**Scorecard shows regression**
+
+Compare with the prior run:
+```bash
+ls eval/results/      # find prior scorecard
+cat eval/results/scorecard_<timestamp>.json | python -m json.tool
+```
+
+---
+
+## 11. Docs reference
+
+| Doc | Description |
+|---|---|
+| `docs/workflow-state-model.md` | Workflow state machine, models, and API |
+| `docs/a2a-architecture.md` | A2A federation design and preview path |
+| `docs/remote-mcp-runbook.md` | Remote MCP server setup and auth matrix |
+| `docs/evaluation-runbook.md` | All eval suites and scorecard system |
+| `docs/observability-runbook.md` | Correlation IDs, tracing, scorecard |
+| `docs/governance-enforcement.md` | Local guardrails → platform feature mapping |
+| `docs/workspace-connectors.md` | Workspace connector setup |
+| `docs/roadmap-next26.md` | Full feature status and architectural narrative |
+
+---
+
+## 12. Reality check
 
 This repo is deliberately split between:
 
-- **runnable now** using public SDKs / docs
-- **ready-to-wire** for preview features announced at Next '26
+- **runnable-now** — works with `make install` and no cloud credentials
+- **preview-scaffold** — clean adapter boundaries for features that require preview access
+- **optional-integration** — documented, feature-flagged, rollback-safe
 
-That keeps the example production-minded without pretending private-preview features are generally available.
+Every feature is labeled. No capability is silently faked.
