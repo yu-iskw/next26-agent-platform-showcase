@@ -11,6 +11,7 @@ Architecture:
 
 Status: runnable-now
 """
+
 from __future__ import annotations
 
 import json
@@ -62,7 +63,7 @@ def tool_check_health() -> str:
 # ---------------------------------------------------------------------------
 
 
-def tool_start_replenishment_workflow(
+def tool_start_replenishment_workflow(  # noqa: PLR0913
     product_id: str,
     product_name: str = "",
     requester: str = "agent",

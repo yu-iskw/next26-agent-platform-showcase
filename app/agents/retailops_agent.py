@@ -13,6 +13,7 @@ A2A federation:
   retailops_root also delegates to A2A external agents when
   ENABLE_A2A_EXPERIMENTAL=true (preview-scaffold).
 """
+
 from __future__ import annotations
 
 from google.adk.agents import Agent, LlmAgent, SequentialAgent

@@ -7,6 +7,7 @@ Status: runnable-now
 
 Output: eval/results/scorecard_{timestamp}.json
 """
+
 from __future__ import annotations
 
 import json
@@ -18,6 +19,8 @@ from typing import Any
 _log = logging.getLogger("retailops.observability.scorecard")
 
 _RESULTS_DIR = Path("eval/results")
+_REGRESSION_DELTA = -0.05
+_IMPROVEMENT_DELTA = 0.02
 
 
 class EvalSuiteResult:
@@ -153,7 +156,9 @@ class ReleaseScorecard:
         delta = round(current_rate - prior_rate, 4)
 
         return {
-            "status": "regression" if delta < -0.05 else ("improvement" if delta > 0.02 else "stable"),
+            "status": "regression"
+            if delta < _REGRESSION_DELTA
+            else ("improvement" if delta > _IMPROVEMENT_DELTA else "stable"),
             "prior_pass_rate": prior_rate,
             "current_pass_rate": round(current_rate, 4),
             "delta": delta,

@@ -5,6 +5,7 @@ Wraps the A2A provider's supplier routing as a callable for the RetailOps agent.
 Status: runnable-now (mock mode)
          preview-scaffold (real Supplier agent endpoint)
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -47,7 +48,7 @@ def get_supplier_quote(
             "quantity": quantity,
         },
         requesting_agent_id="retailops-copilot-v1",
-        correlation_id=correlation_id,
+        **({"correlation_id": correlation_id} if correlation_id else {}),
     )
     response = _get_provider().route(task)
     return {

@@ -2,17 +2,18 @@
 
 Status: runnable-now
 """
+
 from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime, timedelta
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class WorkflowStatus(str, Enum):
+class WorkflowStatus(StrEnum):
     CREATED = "CREATED"
     RUNNING = "RUNNING"
     PAUSED_FOR_APPROVAL = "PAUSED_FOR_APPROVAL"
@@ -25,7 +26,7 @@ class WorkflowStatus(str, Enum):
     TIMED_OUT = "TIMED_OUT"
 
 
-class ApprovalStatus(str, Enum):
+class ApprovalStatus(StrEnum):
     PENDING = "PENDING"
     APPROVED = "APPROVED"
     REJECTED = "REJECTED"
@@ -33,7 +34,7 @@ class ApprovalStatus(str, Enum):
     EXPIRED = "EXPIRED"
 
 
-class WorkflowEventType(str, Enum):
+class WorkflowEventType(StrEnum):
     CREATED = "CREATED"
     RECOMMENDATION_COMPUTED = "RECOMMENDATION_COMPUTED"
     ORDER_PROPOSED = "ORDER_PROPOSED"

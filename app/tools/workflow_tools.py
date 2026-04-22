@@ -5,13 +5,14 @@ approve, reject, and resume workflows through natural-language requests.
 
 Status: runnable-now
 """
+
 from __future__ import annotations
 
 import logging
 from typing import Any
 
 from app.workflows.order_replenishment import ReplenishmentWorkflowEngine
-from app.workflows.state_models import ApprovalDecision, ApprovalStatus, EscalationPolicy
+from app.workflows.state_models import ApprovalDecision, ApprovalStatus
 
 _log = logging.getLogger("retailops.tools.workflow")
 _engine: ReplenishmentWorkflowEngine | None = None
@@ -24,7 +25,7 @@ def _get_engine() -> ReplenishmentWorkflowEngine:
     return _engine
 
 
-def start_replenishment_workflow(
+def start_replenishment_workflow(  # noqa: PLR0913
     product_id: str,
     product_name: str = "",
     requester: str = "agent",

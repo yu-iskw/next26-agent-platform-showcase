@@ -16,11 +16,11 @@ Endpoints (new — Workstream A):
 
 Status: runnable-now (all endpoints work without cloud credentials in local mode)
 """
+
 from __future__ import annotations
 
 import logging
 import os
-import sys
 import uuid
 from datetime import UTC, datetime
 from typing import Any, cast
@@ -38,6 +38,7 @@ _log = logging.getLogger("retailops_tool_api")
 # Workflow engine — lazy import so the service still starts without the app/
 # package on a minimal Dockerfile path; full path enabled when sys.path set.
 # ---------------------------------------------------------------------------
+
 
 def _get_workflow_engine() -> Any:
     try:
@@ -93,7 +94,7 @@ class _InMemoryStore:
     def __init__(self) -> None:
         self._data: dict[str, dict[str, dict[str, Any]]] = {}
 
-    def collection(self, name: str) -> "_InMemoryCollection":
+    def collection(self, name: str) -> _InMemoryCollection:
         if name not in self._data:
             self._data[name] = {}
         return _InMemoryCollection(self._data[name])
@@ -103,7 +104,7 @@ class _InMemoryCollection:
     def __init__(self, store: dict[str, dict[str, Any]]) -> None:
         self._store = store
 
-    def document(self, doc_id: str) -> "_InMemoryDocument":
+    def document(self, doc_id: str) -> _InMemoryDocument:
         return _InMemoryDocument(self._store, doc_id)
 
 
@@ -115,7 +116,7 @@ class _InMemoryDocument:
     def set(self, data: dict[str, Any]) -> None:
         self._store[self._id] = data
 
-    def get(self) -> "_InMemorySnapshot":
+    def get(self) -> _InMemorySnapshot:
         return _InMemorySnapshot(self._store.get(self._id))
 
     def delete(self) -> None:
@@ -288,7 +289,7 @@ def get_workflow(workflow_id: str) -> dict[str, Any]:
     try:
         return engine.get_status(workflow_id)
     except KeyError:
-        raise HTTPException(status_code=404, detail=f"Workflow {workflow_id} not found")
+        raise HTTPException(status_code=404, detail=f"Workflow {workflow_id} not found") from None
 
 
 @app.post("/workflows/{workflow_id}/approve", summary="Approve a paused workflow")
@@ -308,7 +309,7 @@ def approve_workflow(workflow_id: str, req: WorkflowApprovalRequest) -> dict[str
         engine.finalize(workflow_id)
         return engine.get_status(workflow_id)
     except KeyError:
-        raise HTTPException(status_code=404, detail=f"Workflow {workflow_id} not found")
+        raise HTTPException(status_code=404, detail=f"Workflow {workflow_id} not found") from None
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
 
@@ -329,7 +330,7 @@ def reject_workflow(workflow_id: str, req: WorkflowRejectionRequest) -> dict[str
         engine.apply_approval(workflow_id, decision)
         return engine.get_status(workflow_id)
     except KeyError:
-        raise HTTPException(status_code=404, detail=f"Workflow {workflow_id} not found")
+        raise HTTPException(status_code=404, detail=f"Workflow {workflow_id} not found") from None
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
 
@@ -347,6 +348,6 @@ def resume_workflow(workflow_id: str) -> dict[str, Any]:
         engine.finalize(workflow_id)
         return engine.get_status(workflow_id)
     except KeyError:
-        raise HTTPException(status_code=404, detail=f"Workflow {workflow_id} not found")
+        raise HTTPException(status_code=404, detail=f"Workflow {workflow_id} not found") from None
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc

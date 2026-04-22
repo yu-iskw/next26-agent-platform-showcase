@@ -6,10 +6,11 @@ WorkspaceGmailConnector — optional-integration
 Status: runnable-now (mock)
          optional-integration (real Gmail API)
 """
+
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, ClassVar
 
 from app.connectors.base import WORKSPACE_CONNECTORS_ENABLED, GmailConnector
 
@@ -24,7 +25,7 @@ class MockGmailConnector(GmailConnector):
     Status: runnable-now
     """
 
-    _MOCK_THREADS: dict[str, dict[str, Any]] = {
+    _MOCK_THREADS: ClassVar[dict[str, dict[str, Any]]] = {
         "thread-supplier-001": {
             "id": "thread-supplier-001",
             "messages": [

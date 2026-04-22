@@ -12,23 +12,24 @@ WARNING: Gemini Enterprise A2A registration is a preview feature. This module
 provides the contract surface; actual registration requires preview program access.
 See docs/a2a-architecture.md.
 """
+
 from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class A2ACapabilityType(str, Enum):
+class A2ACapabilityType(StrEnum):
     TEXT = "text"
     TOOL_CALL = "tool_call"
     STRUCTURED_DATA = "structured_data"
 
 
-class A2ATaskStatus(str, Enum):
+class A2ATaskStatus(StrEnum):
     SUBMITTED = "submitted"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"

@@ -5,6 +5,7 @@ Supports replay: ``reconstruct_state_from_events`` rebuilds a state dict from th
 
 Status: runnable-now
 """
+
 from __future__ import annotations
 
 import json

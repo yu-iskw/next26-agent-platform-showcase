@@ -5,6 +5,7 @@ Generates the machine-readable identity manifest used by A2A federation.
 Status: runnable-now (card generation)
          preview-scaffold (Gemini Enterprise registration endpoint)
 """
+
 from __future__ import annotations
 
 import json

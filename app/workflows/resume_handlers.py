@@ -2,6 +2,7 @@
 
 Status: runnable-now
 """
+
 from __future__ import annotations
 
 import logging
@@ -77,8 +78,7 @@ def get_workflow_explanation(state: ReplenishmentWorkflowState) -> str:
             f"to {state.escalation_policy.escalation_contact}."
         ),
         WorkflowStatus.TIMED_OUT: (
-            "The workflow timed out after exceeding the maximum number of escalations. "
-            "The order was auto-rejected."
+            "The workflow timed out after exceeding the maximum number of escalations. The order was auto-rejected."
         ),
         WorkflowStatus.COMPLETED: "The order was finalized and submitted successfully.",
         WorkflowStatus.FAILED: f"The workflow failed. Reason: {state.failure_reason or 'Unknown'}.",

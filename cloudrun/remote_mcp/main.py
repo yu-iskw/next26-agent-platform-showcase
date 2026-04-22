@@ -22,12 +22,14 @@ Usage:
   Docker: docker run -p 8090:8090 retailops-remote-mcp
   Cloud:  see Makefile target deploy-remote-mcp and docs/remote-mcp-runbook.md
 """
+
 from __future__ import annotations
 
 import logging
 import os
 import sys
 import uuid
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
@@ -35,17 +37,14 @@ from pydantic import BaseModel, Field
 from starlette.responses import Response
 
 # Ensure app package is importable when running from cloudrun/remote_mcp/
-_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_REPO_ROOT = str(Path(__file__).resolve().parent.parent.parent)
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
 app = FastAPI(
     title="RetailOps Remote MCP Server",
     version="0.1.0",
-    description=(
-        "Remote MCP transport for RetailOps tools. "
-        "Deploy to Cloud Run for authenticated remote access."
-    ),
+    description=("Remote MCP transport for RetailOps tools. Deploy to Cloud Run for authenticated remote access."),
 )
 _log = logging.getLogger("retailops.remote_mcp")
 _SKIP_AUTH = os.getenv("REMOTE_MCP_SKIP_AUTH", "").lower() in ("1", "true", "yes")
@@ -212,10 +211,10 @@ def call_tool(req: ToolCallRequest) -> dict[str, Any]:
             "create_purchase_order": lambda a: adapters.tool_create_purchase_order(**a),
             "submit_approval_request": lambda a: adapters.tool_submit_approval_request(**a),
             "get_order_status": lambda a: adapters.tool_get_order_status(**a),
-            "check_tool_api_health": lambda a: adapters.tool_check_health(),
+            "check_tool_api_health": lambda _: adapters.tool_check_health(),
             "start_replenishment_workflow": lambda a: adapters.tool_start_replenishment_workflow(**a),
             "get_workflow_status": lambda a: adapters.tool_get_workflow_status(**a),
-            "list_pending_approvals": lambda a: adapters.tool_list_pending_approvals(),
+            "list_pending_approvals": lambda _: adapters.tool_list_pending_approvals(),
             "approve_workflow": lambda a: adapters.tool_approve_workflow(**a),
             "reject_workflow": lambda a: adapters.tool_reject_workflow(**a),
         }
@@ -240,4 +239,4 @@ if __name__ == "__main__":
     import uvicorn
 
     port = int(os.getenv("PORT", "8090"))
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)  # noqa: S104

@@ -37,7 +37,9 @@ run-remote-mcp-local:
 
 deploy-remote-mcp:
 	@echo "Deploying remote MCP server to Cloud Run..."
-	gcloud builds submit cloudrun/remote_mcp --tag gcr.io/$${GOOGLE_CLOUD_PROJECT}/retailops-remote-mcp
+	gcloud builds submit . \
+		--dockerfile cloudrun/remote_mcp/Dockerfile \
+		--tag gcr.io/$${GOOGLE_CLOUD_PROJECT}/retailops-remote-mcp
 	gcloud run deploy retailops-remote-mcp \
 		--image gcr.io/$${GOOGLE_CLOUD_PROJECT}/retailops-remote-mcp \
 		--region $${GOOGLE_CLOUD_LOCATION:-us-central1} \

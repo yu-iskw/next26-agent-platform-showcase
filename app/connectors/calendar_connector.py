@@ -6,6 +6,7 @@ WorkspaceCalendarConnector — optional-integration
 Status: runnable-now (mock)
          optional-integration (real Calendar API)
 """
+
 from __future__ import annotations
 
 import logging
@@ -34,7 +35,7 @@ class MockCalendarConnector(CalendarConnector):
             }
         ]
 
-    def list_events(self, calendar_id: str = "primary", max_results: int = 10) -> list[dict[str, Any]]:
+    def list_events(self, _calendar_id: str = "primary", max_results: int = 10) -> list[dict[str, Any]]:
         return self._events[:max_results]
 
     def create_event(
@@ -91,15 +92,14 @@ class WorkspaceCalendarConnector(CalendarConnector):
     def __init__(self) -> None:
         if not WORKSPACE_CONNECTORS_ENABLED:
             raise RuntimeError("WorkspaceCalendarConnector requires ENABLE_WORKSPACE_CONNECTORS=true.")
-        raise NotImplementedError(
-            "WorkspaceCalendarConnector is a scaffold. "
-            "See docs/workspace-connectors.md."
-        )
+        raise NotImplementedError("WorkspaceCalendarConnector is a scaffold. See docs/workspace-connectors.md.")
 
     def list_events(self, calendar_id: str = "primary", max_results: int = 10) -> list[dict[str, Any]]:
         raise NotImplementedError
 
-    def create_event(self, summary: str, start_time: str, end_time: str, attendees: list[str] | None = None, description: str = "") -> dict[str, Any]:
+    def create_event(
+        self, summary: str, start_time: str, end_time: str, attendees: list[str] | None = None, description: str = ""
+    ) -> dict[str, Any]:
         raise NotImplementedError
 
 

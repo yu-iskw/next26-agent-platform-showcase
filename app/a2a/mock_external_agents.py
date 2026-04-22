@@ -11,14 +11,20 @@ Status: runnable-now (local mock mode)
 
 WARNING: These are demo mocks, not production agents.
 """
+
 from __future__ import annotations
 
 import logging
 from datetime import UTC, datetime
+from typing import ClassVar
 
 from app.a2a.models import A2AAgentCard, A2ACapability, A2ATaskRequest, A2ATaskResponse, A2ATaskStatus
 
 _log = logging.getLogger("retailops.a2a.mocks")
+
+_FINANCE_AUTO_APPROVE_LIMIT = 50_000
+_BULK_DISCOUNT_MIN_UNITS = 500
+_VOLUME_DISCOUNT_MIN_UNITS = 100
 
 
 class MockFinanceApprovalAgent:
@@ -65,12 +71,14 @@ class MockFinanceApprovalAgent:
 
         _log.info("[MockFinanceAgent] Reviewing order %s ($%.2f)", order_id, total_cost)
 
-        if requester == "vip" or total_cost < 50_000:
+        if requester == "vip" or total_cost < _FINANCE_AUTO_APPROVE_LIMIT:
             decision = "APPROVED"
             rationale = f"Order ${total_cost:,.2f} within auto-approval limits."
         else:
             decision = "REJECTED"
-            rationale = f"Order ${total_cost:,.2f} exceeds Finance auto-approval limit ($50,000). Manual review required."
+            rationale = (
+                f"Order ${total_cost:,.2f} exceeds Finance auto-approval limit ($50,000). Manual review required."
+            )
 
         return A2ATaskResponse(
             task_id=request.task_id,
@@ -97,7 +105,7 @@ class MockSupplierNegotiationAgent:
 
     AGENT_ID = "supplier-negotiation-agent-mock"
 
-    _BASE_PRICES: dict[str, float] = {
+    _BASE_PRICES: ClassVar[dict[str, float]] = {
         "prod-001": 95.0,
         "prod-002": 210.0,
         "prod-003": 45.0,
@@ -138,9 +146,9 @@ class MockSupplierNegotiationAgent:
 
         base_price = self._BASE_PRICES.get(product_id, self._DEFAULT_PRICE)
         # Volume discount: 5% off for 100+ units, 10% off for 500+ units
-        if quantity >= 500:
+        if quantity >= _BULK_DISCOUNT_MIN_UNITS:
             discount = 0.10
-        elif quantity >= 100:
+        elif quantity >= _VOLUME_DISCOUNT_MIN_UNITS:
             discount = 0.05
         else:
             discount = 0.0
@@ -148,7 +156,7 @@ class MockSupplierNegotiationAgent:
         unit_price = round(base_price * (1 - discount), 2)
         total = round(unit_price * quantity, 2)
 
-        _log.info("[MockSupplierAgent] Quote for %s ×%d: $%.2f/unit = $%.2f", product_id, quantity, unit_price, total)
+        _log.info("[MockSupplierAgent] Quote for %s x%d: $%.2f/unit = $%.2f", product_id, quantity, unit_price, total)
 
         return A2ATaskResponse(
             task_id=request.task_id,

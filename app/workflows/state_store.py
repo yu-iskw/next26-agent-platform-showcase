@@ -4,6 +4,7 @@ Status:
   LocalJsonWorkflowStateStore  — runnable-now (no cloud deps)
   FirestoreWorkflowStateStore  — optional-integration (scaffold only; requires Firestore)
 """
+
 from __future__ import annotations
 
 import json
@@ -112,8 +113,7 @@ class FirestoreWorkflowStateStore(WorkflowStateStore):
             _log.info("FirestoreWorkflowStateStore initialized (project=%s)", project)
         except ImportError:
             raise RuntimeError(
-                "google-cloud-firestore is not installed. "
-                "Install it or use LocalJsonWorkflowStateStore instead."
+                "google-cloud-firestore is not installed. Install it or use LocalJsonWorkflowStateStore instead."
             ) from None
 
     def _col(self) -> Any:

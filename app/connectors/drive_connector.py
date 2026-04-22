@@ -6,10 +6,11 @@ WorkspaceDriveConnector — optional-integration, requires ENABLE_WORKSPACE_CONN
 
 See docs/workspace-connectors.md for setup instructions.
 """
+
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, ClassVar
 
 from app.connectors.base import WORKSPACE_CONNECTORS_ENABLED, DriveConnector
 
@@ -25,7 +26,7 @@ class MockDriveConnector(DriveConnector):
     Status: runnable-now
     """
 
-    _MOCK_DOCS: dict[str, dict[str, Any]] = {
+    _MOCK_DOCS: ClassVar[dict[str, dict[str, Any]]] = {
         "sop-reorder-001": {
             "id": "sop-reorder-001",
             "name": "Replenishment SOP v2.3",
@@ -33,7 +34,7 @@ class MockDriveConnector(DriveConnector):
             "content": (
                 "Replenishment Standard Operating Procedure\n\n"
                 "1. Check current stock against reorder point.\n"
-                "2. Generate reorder recommendation using 1.25× safety multiplier.\n"
+                "2. Generate reorder recommendation using 1.25x safety multiplier.\n"
                 "3. Orders above $25,000 require Finance approval within 24 hours.\n"
                 "4. VIP suppliers get priority allocation in Q4.\n"
                 "5. All orders above $100,000 require VP sign-off."
@@ -84,8 +85,8 @@ class WorkspaceDriveConnector(DriveConnector):
                 "Use MockDriveConnector for local development."
             )
         try:
-            from googleapiclient.discovery import build  # type: ignore[import]
             from google.auth import default  # type: ignore[import]
+            from googleapiclient.discovery import build  # type: ignore[import]
 
             creds, _ = default(scopes=["https://www.googleapis.com/auth/drive.readonly"])
             self._service = build("drive", "v3", credentials=creds)
@@ -98,12 +99,7 @@ class WorkspaceDriveConnector(DriveConnector):
 
     def get_document(self, doc_id: str) -> dict[str, Any]:
         meta = self._service.files().get(fileId=doc_id, fields="id,name,mimeType").execute()
-        content = (
-            self._service.files()
-            .export(fileId=doc_id, mimeType="text/plain")
-            .execute()
-            .decode("utf-8")
-        )
+        content = self._service.files().export(fileId=doc_id, mimeType="text/plain").execute().decode("utf-8")
         return {**meta, "content": content}
 
     def search_documents(self, query: str, max_results: int = 5) -> list[dict[str, Any]]:

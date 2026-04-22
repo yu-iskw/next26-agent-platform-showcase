@@ -9,12 +9,14 @@ Enable with ENABLE_A2A_EXPERIMENTAL=true. See docs/a2a-architecture.md.
 Status: runnable-now (mock routing)
          preview-scaffold (Gemini Enterprise registration)
 """
+
 from __future__ import annotations
 
 import logging
 import os
 from typing import Any
 
+from app.a2a.mock_external_agents import MockFinanceApprovalAgent, MockSupplierNegotiationAgent
 from app.a2a.models import (
     A2AAgentCard,
     A2ARoutingRule,
@@ -22,7 +24,6 @@ from app.a2a.models import (
     A2ATaskResponse,
     A2ATaskStatus,
 )
-from app.a2a.mock_external_agents import MockFinanceApprovalAgent, MockSupplierNegotiationAgent
 
 _log = logging.getLogger("retailops.a2a.provider")
 
@@ -46,11 +47,13 @@ class A2AProvider:
 
         self._routing_rules: list[A2ARoutingRule] = [
             A2ARoutingRule(intent_prefix="finance.", target_agent_id=MockFinanceApprovalAgent.AGENT_ID, priority=10),
-            A2ARoutingRule(intent_prefix="supplier.", target_agent_id=MockSupplierNegotiationAgent.AGENT_ID, priority=10),
+            A2ARoutingRule(
+                intent_prefix="supplier.", target_agent_id=MockSupplierNegotiationAgent.AGENT_ID, priority=10
+            ),
         ]
 
     @classmethod
-    def from_env(cls) -> "A2AProvider":
+    def from_env(cls) -> A2AProvider:
         """Create a provider configured from environment variables."""
         use_mocks = not _A2A_ENABLED or os.getenv("A2A_USE_MOCKS", "true").lower() in ("1", "true", "yes")
         provider = cls(use_mocks=use_mocks)
@@ -91,8 +94,7 @@ class A2AProvider:
             return A2ATaskResponse(
                 task_id=request.task_id,
                 status=A2ATaskStatus.FAILED,
-                error=f"No route found for intent '{request.intent}'. "
-                      f"Supported prefixes: finance., supplier.",
+                error=f"No route found for intent '{request.intent}'. Supported prefixes: finance., supplier.",
                 correlation_id=request.correlation_id,
             )
 
@@ -124,7 +126,7 @@ class A2AProvider:
             task_id=request.task_id,
             status=A2ATaskStatus.FAILED,
             error=f"Agent {agent_id!r} is not registered in this provider. "
-                  f"This path requires Gemini Enterprise A2A preview access.",
+            f"This path requires Gemini Enterprise A2A preview access.",
             correlation_id=request.correlation_id,
         )
 

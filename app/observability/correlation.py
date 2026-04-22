@@ -5,6 +5,7 @@ across the agent runtime, Cloud Run tool API, remote MCP, and A2A calls.
 
 Status: runnable-now
 """
+
 from __future__ import annotations
 
 import logging
@@ -13,6 +14,8 @@ from contextvars import ContextVar
 from typing import Any
 
 _log = logging.getLogger("retailops.observability.correlation")
+
+_W3C_TRACEPARENT_PARTS = 4
 
 # Thread-/async-safe context variables
 _correlation_id_var: ContextVar[str] = ContextVar("correlation_id", default="")
@@ -80,7 +83,7 @@ def extract_from_headers(headers: dict[str, str]) -> str:
     traceparent = headers.get("traceparent") or headers.get("Traceparent")
     if traceparent:
         parts = traceparent.split("-")
-        if len(parts) == 4:
+        if len(parts) == _W3C_TRACEPARENT_PARTS:
             _trace_id_var.set(parts[1])
             _span_id_var.set(parts[2])
 

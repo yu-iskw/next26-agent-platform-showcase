@@ -2,6 +2,7 @@
 
 Status: runnable-now
 """
+
 from __future__ import annotations
 
 import logging
@@ -72,9 +73,7 @@ def process_approval_decision(
 ) -> ReplenishmentWorkflowState:
     """Apply an approve/reject decision to a paused workflow."""
     if state.status not in (WorkflowStatus.PAUSED_FOR_APPROVAL, WorkflowStatus.ESCALATED):
-        raise ValueError(
-            f"Workflow {state.workflow_id} is not awaiting approval (status={state.status})"
-        )
+        raise ValueError(f"Workflow {state.workflow_id} is not awaiting approval (status={state.status})")
 
     state.approval_decided_at = decision.decided_at
     state.approver = decision.approver

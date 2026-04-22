@@ -10,6 +10,7 @@ See docs/governance-enforcement.md.
 Status: runnable-now (local simulation)
          optional-integration (Vertex AI Model Armor, Agent Gateway)
 """
+
 from __future__ import annotations
 
 import csv
@@ -28,7 +29,6 @@ _GOLDEN_CSV = Path("eval/golden/policy_cases.csv")
 
 def run_policy_eval(
     golden_csv: Path | None = None,
-    output_dir: Path | None = None,
 ) -> EvalSuiteResult:
     """Run all policy golden cases and return an EvalSuiteResult."""
     csv_path = golden_csv or _GOLDEN_CSV
@@ -53,7 +53,7 @@ def run_policy_eval(
     return suite
 
 
-def _run_case(row: dict[str, Any]) -> tuple[bool, str, str]:
+def _run_case(row: dict[str, Any]) -> tuple[bool, str, str]:  # noqa: PLR0911
     """Execute one policy golden case."""
     try:
         policy_type = row.get("policy_type", "approval_threshold")

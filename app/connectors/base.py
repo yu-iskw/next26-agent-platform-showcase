@@ -11,6 +11,7 @@ Status: runnable-now (mock implementations)
 WARNING: Real connector paths require Google Workspace API credentials and
 ENABLE_WORKSPACE_CONNECTORS=true. See docs/workspace-connectors.md.
 """
+
 from __future__ import annotations
 
 import os

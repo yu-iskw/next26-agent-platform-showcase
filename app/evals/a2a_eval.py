@@ -7,6 +7,7 @@ Tracks:
 
 Status: runnable-now (mock mode, no network required)
 """
+
 from __future__ import annotations
 
 import csv
@@ -15,7 +16,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from app.a2a.models import A2ATaskRequest, A2ATaskStatus
+from app.a2a.models import A2ATaskRequest
 from app.a2a.provider import A2AProvider
 from app.observability.release_scorecard import EvalSuiteResult, ReleaseScorecard
 
@@ -26,7 +27,6 @@ _GOLDEN_CSV = Path("eval/golden/a2a_cases.csv")
 
 def run_a2a_eval(
     golden_csv: Path | None = None,
-    output_dir: Path | None = None,
 ) -> EvalSuiteResult:
     """Run all A2A golden cases and return an EvalSuiteResult."""
     csv_path = golden_csv or _GOLDEN_CSV
@@ -52,7 +52,7 @@ def run_a2a_eval(
     return suite
 
 
-def _run_case(row: dict[str, Any], provider: A2AProvider) -> tuple[bool, str, str]:
+def _run_case(row: dict[str, Any], provider: A2AProvider) -> tuple[bool, str, str]:  # noqa: PLR0911
     """Execute one A2A golden case."""
     try:
         intent = row.get("intent", "")

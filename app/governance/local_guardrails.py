@@ -15,6 +15,7 @@ See docs/governance-enforcement.md for the full mapping.
 
 Status: runnable-now (local simulation only)
 """
+
 from __future__ import annotations
 
 import re
@@ -26,7 +27,9 @@ from typing import Any
 # ---------------------------------------------------------------------------
 
 _INJECTION_PATTERNS: list[re.Pattern[str]] = [
-    re.compile(r"\bignore\b.{0,30}\b(previous|prior|above|all)\b.{0,30}\b(instructions?|prompts?|rules?)\b", re.IGNORECASE),
+    re.compile(
+        r"\bignore\b.{0,30}\b(previous|prior|above|all)\b.{0,30}\b(instructions?|prompts?|rules?)\b", re.IGNORECASE
+    ),
     re.compile(r"\breveal\b.{0,30}\b(system\s+prompt|instructions?|configuration)\b", re.IGNORECASE),
     re.compile(r"\bbypass\b.{0,30}\b(safety|rules?|guidelines?|restrictions?)\b", re.IGNORECASE),
     re.compile(r"\bact\s+as\b.{0,30}\b(different|another|new)\b.{0,30}\b(ai|model|assistant|bot)\b", re.IGNORECASE),
@@ -36,14 +39,23 @@ _INJECTION_PATTERNS: list[re.Pattern[str]] = [
 ]
 
 _EXFILTRATION_PATTERNS: list[re.Pattern[str]] = [
-    re.compile(r"\b(output|print|show|reveal|expose|dump|send|share)\b.{0,30}\b(customer|user|personal|sensitive)\b.{0,30}\bdata\b", re.IGNORECASE),
+    re.compile(
+        r"\b(output|print|show|reveal|expose|dump|send|share)\b.{0,30}\b(customer|user|personal|sensitive)\b.{0,30}\bdata\b",
+        re.IGNORECASE,
+    ),
     re.compile(r"\b(extract|export|leak)\b.{0,30}\b(database|records?|pii|credentials?)\b", re.IGNORECASE),
     re.compile(r"\b(ignore|bypass)\b.{0,30}\b(privacy|confidential|classified)\b", re.IGNORECASE),
 ]
 
 _UNSAFE_TOOL_PATTERNS: list[re.Pattern[str]] = [
-    re.compile(r"\b(delete|drop|truncate|destroy)\b.{0,30}\b(all|every|entire)\b.{0,30}\b(data|orders?|records?|tables?)\b", re.IGNORECASE),
-    re.compile(r"\b(approve|authorize)\b.{0,30}\b(all|every)\b.{0,30}\b(orders?|requests?|workflows?)\b.{0,20}\bwithout\b", re.IGNORECASE),
+    re.compile(
+        r"\b(delete|drop|truncate|destroy)\b.{0,30}\b(all|every|entire)\b.{0,30}\b(data|orders?|records?|tables?)\b",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\b(approve|authorize)\b.{0,30}\b(all|every)\b.{0,30}\b(orders?|requests?|workflows?)\b.{0,20}\bwithout\b",
+        re.IGNORECASE,
+    ),
 ]
 
 

@@ -5,13 +5,15 @@ Adds structured log emission alongside span creation.
 
 Status: runnable-now (no-op when OTel SDK not configured)
 """
+
 from __future__ import annotations
 
 import functools
 import logging
 import time
+from collections.abc import Callable, Generator
 from contextlib import contextmanager
-from typing import Any, Callable, Generator, TypeVar
+from typing import Any, TypeVar
 
 _log = logging.getLogger("retailops.observability.trace")
 
@@ -50,7 +52,7 @@ def span(name: str, attributes: dict[str, Any] | None = None) -> Generator[None,
         yield
 
 
-def timed(fn: F) -> F:
+def timed(fn: F) -> F:  # noqa: UP047
     """Decorator that logs execution duration for any function."""
 
     @functools.wraps(fn)
@@ -83,8 +85,8 @@ def record_metric(name: str, value: float, labels: dict[str, str] | None = None)
         meter = metrics.get_meter("retailops")
         gauge = meter.create_gauge(name)
         gauge.set(value, labels or {})
-    except Exception:
-        pass
+    except Exception as exc:
+        _log.debug("OTel gauge creation failed: %s", exc)
 
 
 def latency_histogram(name: str, elapsed_ms: float, labels: dict[str, str] | None = None) -> None:

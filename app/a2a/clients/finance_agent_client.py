@@ -5,6 +5,7 @@ Wraps the A2A provider's finance routing as a callable for the RetailOps agent.
 Status: runnable-now (mock mode)
          preview-scaffold (real Finance agent endpoint)
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -50,7 +51,7 @@ def request_finance_approval(
             "requester": requester,
         },
         requesting_agent_id="retailops-copilot-v1",
-        correlation_id=correlation_id,
+        **({"correlation_id": correlation_id} if correlation_id else {}),
     )
     response = _get_provider().route(task)
     return {

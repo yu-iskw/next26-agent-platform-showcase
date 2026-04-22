@@ -9,6 +9,7 @@ Tracks:
 
 Status: runnable-now
 """
+
 from __future__ import annotations
 
 import csv
@@ -34,7 +35,6 @@ def _parse_bool(v: str) -> bool:
 
 def run_workflow_eval(
     golden_csv: Path | None = None,
-    output_dir: Path | None = None,
 ) -> EvalSuiteResult:
     """Run all workflow golden cases and return an EvalSuiteResult."""
     csv_path = golden_csv or _GOLDEN_CSV
@@ -60,7 +60,7 @@ def run_workflow_eval(
     return suite
 
 
-def _run_case(row: dict[str, Any], tmp_dir: str) -> tuple[bool, str, str]:
+def _run_case(row: dict[str, Any], tmp_dir: str) -> tuple[bool, str, str]:  # noqa: PLR0911
     """Execute one golden case. Returns (passed, failure_category, details)."""
     try:
         store = LocalJsonWorkflowStateStore(state_dir=tmp_dir)
