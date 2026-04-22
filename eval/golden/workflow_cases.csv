@@ -1,0 +1,11 @@
+case_id,product_id,risk_tolerance,current_stock,reorder_point,unit_cost_usd,expect_approval_required,auto_approve,expected_status,notes
+wf-001,prod-001,medium,90,100,10.0,false,false,COMPLETED,Low value order auto-completes
+wf-002,prod-001,medium,0,300,100.0,true,true,COMPLETED,High value auto-approved by harness
+wf-003,prod-001,medium,0,300,100.0,true,false,PAUSED_FOR_APPROVAL,High value paused awaiting approval
+wf-004,prod-001,low,0,240,100.0,true,false,PAUSED_FOR_APPROVAL,Low risk tolerance lowers threshold
+wf-005,prod-001,high,0,300,98.0,false,false,COMPLETED,High risk tolerance raises threshold (total<37500)
+wf-006,prod-002,medium,100,100,10.0,false,false,COMPLETED,At reorder point no shortfall
+wf-007,prod-003,medium,50,100,500.0,true,true,COMPLETED,Very high unit cost auto-approved by harness
+wf-008,prod-004,medium,0,50,10.0,false,false,COMPLETED,Low stock low cost completes directly
+wf-009,prod-005,low,0,200,100.0,true,false,PAUSED_FOR_APPROVAL,Low risk strict threshold
+wf-010,prod-006,medium,0,300,250.0,true,false,PAUSED_FOR_APPROVAL,Large shortfall high unit cost triggers approval

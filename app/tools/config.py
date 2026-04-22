@@ -29,5 +29,20 @@ class Settings:
     capture_genai_message_content: bool = os.getenv("CAPTURE_GENAI_MESSAGE_CONTENT", "").lower() in ("1", "true", "yes")
     runtime_service_account: str = os.getenv("RUNTIME_SERVICE_ACCOUNT", "")
 
+    # Workstream A: Workflow state persistence
+    workflow_state_backend: str = os.getenv("WORKFLOW_STATE_BACKEND", "local")
+    workflow_state_dir: str = os.getenv("WORKFLOW_STATE_DIR", ".local/state")
+
+    # Workstream B: A2A federation (preview-scaffold)
+    enable_a2a_experimental: bool = os.getenv("ENABLE_A2A_EXPERIMENTAL", "").lower() in ("1", "true", "yes")
+    a2a_provider_id: str = os.getenv("A2A_PROVIDER_ID", "retailops-demo-org")
+    a2a_use_mocks: bool = os.getenv("A2A_USE_MOCKS", "true").lower() in ("1", "true", "yes")
+
+    # Workstream C: Remote MCP
+    remote_mcp_skip_auth: bool = os.getenv("REMOTE_MCP_SKIP_AUTH", "").lower() in ("1", "true", "yes")
+
+    # Workstream E: Workspace connectors (optional-integration)
+    enable_workspace_connectors: bool = os.getenv("ENABLE_WORKSPACE_CONNECTORS", "").lower() in ("1", "true", "yes")
+
 
 settings = Settings()

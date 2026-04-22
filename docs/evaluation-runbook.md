@@ -1,6 +1,51 @@
 # Evaluation Runbook
 
-This runbook documents the hybrid evaluation flow for the RetailOps agent runtime.
+**Status: runnable-now** (local suites) | **optional-integration** (cloud agent eval)
+
+This runbook covers the local evaluation suites added in the Next '26 expansion
+and the existing hybrid evaluation flow for the RetailOps agent runtime.
+
+---
+
+## Local Evaluation Suites (New)
+
+### Quick run — all local suites
+
+```bash
+make eval-all
+# → runs workflow + A2A + policy evals, saves scorecard to eval/results/
+```
+
+### Workflow Eval
+
+Tests the `ReplenishmentWorkflowEngine` against golden cases.
+Golden cases: `eval/golden/workflow_cases.csv`
+
+```bash
+make eval-workflow
+```
+
+### A2A Eval
+
+Tests A2A provider routing and mock external agents.
+Golden cases: `eval/golden/a2a_cases.csv`
+
+```bash
+make eval-a2a
+```
+
+### Policy Eval
+
+Tests approval policy thresholds and local governance guardrails.
+Golden cases: `eval/golden/policy_cases.csv`
+
+```bash
+make eval-policy
+```
+
+---
+
+## ADK Agent Evaluation (Cloud)
 
 ## Inputs
 

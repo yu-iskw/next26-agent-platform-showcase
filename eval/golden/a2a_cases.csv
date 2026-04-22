@@ -1,0 +1,11 @@
+case_id,intent,payload,expected_status,check_correlation_id,notes
+a2a-001,finance.order.review,"{""order_id"": ""po-001"", ""total_cost_usd"": 10000.0}",completed,true,Low value auto-approved by finance mock
+a2a-002,finance.order.review,"{""order_id"": ""po-002"", ""total_cost_usd"": 75000.0}",completed,true,High value rejected by finance mock
+a2a-003,finance.order.review,"{""order_id"": ""po-003"", ""total_cost_usd"": 99999.0, ""requester"": ""vip""}",completed,true,VIP requester always approved
+a2a-004,supplier.quote.request,"{""product_id"": ""prod-001"", ""quantity"": 10}",completed,true,Standard supplier quote
+a2a-005,supplier.quote.request,"{""product_id"": ""prod-001"", ""quantity"": 100}",completed,true,Volume discount 5pct at 100 units
+a2a-006,supplier.quote.request,"{""product_id"": ""prod-001"", ""quantity"": 500}",completed,true,Volume discount 10pct at 500 units
+a2a-007,supplier.quote.request,"{""product_id"": ""prod-unknown"", ""quantity"": 1}",completed,true,Unknown product uses default price
+a2a-008,unknown.intent,{},failed,false,Unknown intent returns failed response
+a2a-009,finance.order.approve,"{""order_id"": ""po-010"", ""total_cost_usd"": 1000.0}",completed,true,Finance approve intent resolves to review
+a2a-010,supplier.catalog.query,"{""product_id"": ""prod-002"", ""quantity"": 50}",completed,true,Supplier catalog query routes to supplier agent
