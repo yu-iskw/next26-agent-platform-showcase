@@ -7,7 +7,7 @@ source "${_script_dir}/lib/cloudrun_tool_api_env.sh"
 
 IMAGE="gcr.io/${GOOGLE_CLOUD_PROJECT}/${SERVICE_NAME}:latest"
 
-gcloud builds submit cloudrun/tool_api --tag "${IMAGE}"
+gcloud builds submit . --dockerfile cloudrun/tool_api/Dockerfile --tag "${IMAGE}"
 
 gcloud run deploy "${SERVICE_NAME}" --image "${IMAGE}" --platform managed --region "${REGION}" \
 	--no-allow-unauthenticated \
