@@ -8,6 +8,7 @@ Status: runnable-now (mock mode)
 
 from __future__ import annotations
 
+import uuid
 from typing import Any
 
 from app.a2a.models import A2ATaskRequest
@@ -48,7 +49,7 @@ def get_supplier_quote(
             "quantity": quantity,
         },
         requesting_agent_id="retailops-copilot-v1",
-        **({"correlation_id": correlation_id} if correlation_id else {}),
+        correlation_id=correlation_id or uuid.uuid4().hex,
     )
     response = _get_provider().route(task)
     return {

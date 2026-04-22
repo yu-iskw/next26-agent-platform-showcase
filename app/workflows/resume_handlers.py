@@ -61,13 +61,15 @@ def replay_workflow_timeline(
 
 def get_workflow_explanation(state: ReplenishmentWorkflowState) -> str:
     """Return a human-readable explanation of why the workflow is in its current state."""
+    _deadline = state.approval_deadline()
+    _deadline_str = _deadline.strftime("%Y-%m-%d %H:%M UTC") if _deadline is not None else "N/A"
     explanations: dict[WorkflowStatus, str] = {
         WorkflowStatus.CREATED: "The workflow has been created but not yet started.",
         WorkflowStatus.RUNNING: "The workflow is actively processing.",
         WorkflowStatus.PAUSED_FOR_APPROVAL: (
             f"The proposed order (${state.proposed_total_cost_usd:,.2f}) exceeds the approval threshold "
             f"and is awaiting sign-off from an authorized approver. "
-            f"Deadline: {state.approval_deadline().strftime('%Y-%m-%d %H:%M UTC') if state.approval_deadline() else 'N/A'}."
+            f"Deadline: {_deadline_str}."
         ),
         WorkflowStatus.APPROVED: "The order has been approved and is ready to be finalized.",
         WorkflowStatus.REJECTED: f"The order was rejected. Reason: {state.approval_notes or 'Not specified'}.",

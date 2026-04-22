@@ -35,7 +35,7 @@ class MockCalendarConnector(CalendarConnector):
             }
         ]
 
-    def list_events(self, _calendar_id: str = "primary", max_results: int = 10) -> list[dict[str, Any]]:
+    def list_events(self, calendar_id: str = "primary", max_results: int = 10) -> list[dict[str, Any]]:  # noqa: ARG002
         return self._events[:max_results]
 
     def create_event(

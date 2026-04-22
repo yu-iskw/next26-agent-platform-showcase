@@ -49,13 +49,14 @@ def request_approval(
     state.approval_status = ApprovalStatus.PENDING
     state.approval_requested_at = datetime.now(UTC)
 
+    _deadline = state.approval_deadline()
     evt = state.record_event(
         WorkflowEventType.APPROVAL_REQUESTED,
         actor="system",
         proposed_units=state.proposed_units,
         proposed_total_cost_usd=state.proposed_total_cost_usd,
         reason=reason or f"Order total ${state.proposed_total_cost_usd:,.2f} exceeds approval threshold",
-        deadline=state.approval_deadline().isoformat() if state.approval_deadline() else None,
+        deadline=_deadline.isoformat() if _deadline is not None else None,
     )
     state.capture_checkpoint(label="approval_requested")
     store.save(state)
